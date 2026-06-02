@@ -7,6 +7,10 @@ document.getElementById('filter-month').addEventListener('change', applyFilters,
 document.getElementById('sort-by').addEventListener('change', applyFilters, false);
 
 window.addEventListener('DOMContentLoaded', () => {
+    if (typeof firebase !== 'undefined' && typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(FIREBASE_CONFIG);
+    }
+
     if (typeof AGENT_CONFIG !== 'undefined') {
         document.getElementById('cfg-agent-display').innerHTML = `<i class="fa-solid fa-user-tie"></i> ${AGENT_CONFIG.name} (${AGENT_CONFIG.agentCode})`;
         document.getElementById('cfg-pdf-agent-name').textContent = AGENT_CONFIG.name;
@@ -177,7 +181,21 @@ function saveDashboardData(totalPolicies, totalPremium, totalCommission) {
         const jsonStr = JSON.stringify(dataToSave);
         // Encrypt the data using the current password
         const encrypted = CryptoJS.AES.encrypt(jsonStr, currentCryptoKey).toString();
-        localStorage.setItem('licDashboardData', encrypted);
+        
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            const db = firebase.firestore();
+            db.collection("lic_data").doc("dashboard").set({
+                payload: encrypted,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log("Data securely synced to cloud.");
+            }).catch((err) => {
+                console.error("Cloud sync error:", err);
+                localStorage.setItem('licDashboardData', encrypted);
+            });
+        } else {
+            localStorage.setItem('licDashboardData', encrypted);
+        }
     } catch (e) {
         console.error("Local storage error:", e);
     }
@@ -456,9 +474,53 @@ function handleLogin() {
         // NO sessionStorage! Must login every time.
         
         // Attempt to load encrypted data
-        loadFromLocalStorage(pass);
+        loadFromDatabase(pass);
     } else {
         errorMsg.classList.remove('hidden');
+    }
+}
+
+function processEncryptedData(decryptedData) {
+    const parsed = JSON.parse(decryptedData);
+    excelData = parsed.excelData;
+    
+    // Re-render UI
+    document.getElementById('total-policies').textContent = parsed.totalPolicies;
+    document.getElementById('total-premium').textContent = formatCurrency(parsed.totalPremium);
+    document.getElementById('total-commission').textContent = formatCurrency(parsed.totalCommission);
+    
+    renderTable(excelData);
+    renderBirthdays(excelData);
+    renderChart(parsed.totalPremium, parsed.totalCommission);
+    
+    // Hide upload screen, show dashboard
+    document.getElementById('upload-card').style.display = 'none';
+    document.getElementById('dashboard-content').classList.remove('hidden');
+}
+
+function loadFromDatabase(key) {
+    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        const db = firebase.firestore();
+        db.collection("lic_data").doc("dashboard").get().then((doc) => {
+            if (doc.exists) {
+                try {
+                    const encrypted = doc.data().payload;
+                    const bytes = CryptoJS.AES.decrypt(encrypted, key);
+                    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                    if (!decryptedData) throw new Error("Decryption failed");
+                    processEncryptedData(decryptedData);
+                } catch(e) {
+                    console.error("Cloud data decryption failed. Incorrect password?", e);
+                }
+            } else {
+                loadFromLocalStorage(key);
+            }
+        }).catch((err) => {
+            console.error("Error fetching from cloud:", err);
+            loadFromLocalStorage(key);
+        });
+    } else {
+        loadFromLocalStorage(key);
     }
 }
 
@@ -471,22 +533,7 @@ function loadFromLocalStorage(key) {
             const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
             
             if (!decryptedData) throw new Error("Decryption failed");
-            
-            const parsed = JSON.parse(decryptedData);
-            excelData = parsed.excelData;
-            
-            // Re-render UI
-            document.getElementById('total-policies').textContent = parsed.totalPolicies;
-            document.getElementById('total-premium').textContent = formatCurrency(parsed.totalPremium);
-            document.getElementById('total-commission').textContent = formatCurrency(parsed.totalCommission);
-            
-            renderTable(excelData);
-            renderBirthdays(excelData);
-            renderChart(parsed.totalPremium, parsed.totalCommission);
-            
-            // Hide upload screen, show dashboard
-            document.getElementById('upload-card').style.display = 'none';
-            document.getElementById('dashboard-content').classList.remove('hidden');
+            processEncryptedData(decryptedData);
         }
     } catch (e) {
         console.warn('No valid encrypted data found or decryption failed.');
@@ -496,6 +543,10 @@ function loadFromLocalStorage(key) {
 
 function clearData() {
     if (confirm('Are you sure you want to clear the current list and upload a new one?')) {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            const db = firebase.firestore();
+            db.collection("lic_data").doc("dashboard").delete().catch(err => console.error(err));
+        }
         localStorage.removeItem('licDashboardData');
         excelData = [];
         
