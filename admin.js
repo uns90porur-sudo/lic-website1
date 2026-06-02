@@ -132,14 +132,16 @@ function processData(rows) {
             totalCommission += comm;
 
             const name = (rowObj['Name of Assured'] || 'Unknown').toString().trim();
-            const dobString = (rowObj['DOB'] || rowObj['Date of Birth'] || rowObj['D.o.B'] || rowObj['Dob'] || '').toString().trim();
+            const dobRaw = rowObj['DOB'] || rowObj['Date of Birth'] || rowObj['D.o.B'] || rowObj['Dob'] || '';
+            const dobString = formatExcelDate(dobRaw);
             const dueString = (rowObj['Due'] || '').toString().trim();
             
             let docKey = Object.keys(rowObj).find(k => {
                 let lower = k.toLowerCase().replace(/[^a-z]/g, '');
                 return lower === 'doc' || lower === 'dateofcommencement' || lower === 'commencement' || lower === 'commencementdate';
             });
-            const docString = docKey ? (rowObj[docKey] || '').toString().trim() : '';
+            const docRaw = docKey ? (rowObj[docKey] || '') : '';
+            const docString = formatExcelDate(docRaw);
             
             let existingEntry = excelData.find(item => item.name === name);
             if (!existingEntry) {
@@ -377,6 +379,28 @@ function formatCurrency(amount) {
         currency: 'INR',
         maximumFractionDigits: 0
     }).format(amount);
+}
+
+function formatExcelDate(serial) {
+    if (!serial) return '';
+    if (typeof serial === 'string') {
+        if (!isNaN(serial) && serial.trim() !== '') {
+            serial = parseFloat(serial);
+        } else {
+            return serial.toString().trim();
+        }
+    }
+    if (typeof serial === 'number') {
+        const offset = serial > 59 ? 25569 : 25568;
+        const utc_days = Math.floor(serial - offset);
+        const date = new Date(utc_days * 86400 * 1000);
+        
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+        const year = date.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+    }
+    return serial.toString().trim();
 }
 
 function renderBirthdays(data) {
