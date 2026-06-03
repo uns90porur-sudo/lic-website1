@@ -125,7 +125,12 @@ function processData(rows) {
             totalPolicies++;
             
             // Parse premium and commission if they exist
-            const prem = parseFloat(rowObj['TotPrem']) || parseFloat(rowObj['InstPrem']) || 0;
+            const instPrem = parseFloat(rowObj['InstPrem']) || 0;
+            const duesCount = parseInt(rowObj['Dues'], 10) || 1;
+            let prem = parseFloat(rowObj['TotPrem']) || parseFloat(rowObj['InstPrem']) || 0;
+            if (instPrem > 0 && duesCount > 0) {
+                prem = instPrem * duesCount;
+            }
             const comm = parseFloat(rowObj['EstCom']) || 0;
             
             totalPremium += prem;
@@ -174,7 +179,7 @@ function processData(rows) {
             
             existingEntry.count++;
             existingEntry.policyNumbers.push(rowObj['PolicyNo']);
-            existingEntry.policies.push({ no: rowObj['PolicyNo'], prem: prem, doc: docString });
+            existingEntry.policies.push({ no: rowObj['PolicyNo'], prem: prem, instPrem: instPrem, duesCount: duesCount, doc: docString });
             existingEntry.totalPrem += prem;
             existingEntry.totalCom += comm;
         }
@@ -486,9 +491,13 @@ function generatePDFNotice(encodedRowData) {
     if (row.policies && row.policies.length > 0) {
         row.policies.forEach(policy => {
             const docText = policy.doc ? `<br><small style="color: #666; font-size: 0.85em;">D.O.C: ${formatExcelDate(policy.doc)}</small>` : '';
+            const instPremText = policy.instPrem ? formatCurrency(policy.instPrem) : '-';
+            const duesText = policy.duesCount || '-';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px; border: 1px solid #ccc;">${policy.no}${docText}</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${instPremText}</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${duesText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">${formatCurrency(policy.prem)}</td>
             `;
             tbody.appendChild(tr);
@@ -498,6 +507,8 @@ function generatePDFNotice(encodedRowData) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px; border: 1px solid #ccc;">${pNo}</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">-</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">-</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">-</td>
             `;
             tbody.appendChild(tr);
