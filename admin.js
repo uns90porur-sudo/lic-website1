@@ -301,7 +301,7 @@ function renderTable(data) {
         const count = row.count;
         
         const policyNumbers = row.policies.map(p => {
-            return p.doc ? `${p.no} <span style="font-size:0.8em; color:var(--text-muted);">(D.O.C: ${p.doc})</span>` : p.no;
+            return p.doc ? `${p.no} <span style="font-size:0.8em; color:var(--text-muted);">(D.O.C: ${formatExcelDate(p.doc)})</span>` : p.no;
         }).join('<br>');
         
         const totPrem = formatCurrency(row.totalPrem);
@@ -485,7 +485,7 @@ function generatePDFNotice(encodedRowData) {
     
     if (row.policies && row.policies.length > 0) {
         row.policies.forEach(policy => {
-            const docText = policy.doc ? `<br><small style="color: #666; font-size: 0.85em;">D.O.C: ${policy.doc}</small>` : '';
+            const docText = policy.doc ? `<br><small style="color: #666; font-size: 0.85em;">D.O.C: ${formatExcelDate(policy.doc)}</small>` : '';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px; border: 1px solid #ccc;">${policy.no}${docText}</td>
@@ -665,7 +665,7 @@ function showClientModal(encodedRow) {
     
     if (row.policies && row.policies.length > 0) {
         row.policies.forEach(p => {
-            const docText = p.doc ? `<br><small style="color: #64748b;">D.O.C: ${p.doc}</small>` : '';
+            const docText = p.doc ? `<br><small style="color: #64748b;">D.O.C: ${formatExcelDate(p.doc)}</small>` : '';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0;">${p.no}${docText}</td>
