@@ -125,9 +125,24 @@ function processData(rows) {
             totalPolicies++;
             
             // Parse premium and commission if they exist
-            const instPrem = parseFloat(rowObj['InstPrem']) || 0;
-            const duesCount = parseInt(rowObj['Dues'], 10) || 1;
-            let prem = parseFloat(rowObj['TotPrem']) || parseFloat(rowObj['InstPrem']) || 0;
+            // Helper to find columns ignoring spaces and punctuation
+            const findCol = (possibleNames) => {
+                const key = Object.keys(rowObj).find(k => possibleNames.includes(k.toLowerCase().replace(/[^a-z]/g, '')));
+                return key ? rowObj[key] : null;
+            };
+
+            const instPremRaw = findCol(['instprem', 'installmentpremium', 'instpremium', 'premium']);
+            const duesRaw = findCol(['dues', 'due', 'noofdues', 'noofinstalments']);
+
+            const instPrem = parseFloat(instPremRaw) || parseFloat(rowObj['TotPrem']) || 0;
+            let duesCount = parseInt(duesRaw, 10);
+            
+            // If it's a date like "04/2024", ignore it for the multiplier
+            if (isNaN(duesCount) || duesCount <= 0 || (duesRaw && duesRaw.toString().includes('/'))) {
+                duesCount = 1;
+            }
+
+            let prem = parseFloat(rowObj['TotPrem']) || instPrem || 0;
             if (instPrem > 0 && duesCount > 0) {
                 prem = instPrem * duesCount;
             }
