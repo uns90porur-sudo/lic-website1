@@ -154,8 +154,27 @@ function processData(rows) {
             const name = (rowObj['Name of Assured'] || 'Unknown').toString().trim();
             const dobRaw = rowObj['DOB'] || rowObj['Date of Birth'] || rowObj['D.o.B'] || rowObj['Dob'] || '';
             const dobString = formatExcelDate(dobRaw);
-            const dueString = (rowObj['Due'] || '').toString().trim();
             
+            const fupRaw = findCol(['fup', 'f.u.p', 'due', 'duedate']);
+            const fupString = (fupRaw || '').toString().trim();
+            
+            // Format FUP (e.g., 12/2025 to DEC 2025)
+            let formattedFup = '';
+            if (fupString && fupString.includes('/')) {
+                const parts = fupString.split('/');
+                if (parts.length >= 2) {
+                    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                    const monthIdx = parseInt(parts[0], 10) - 1;
+                    if (monthIdx >= 0 && monthIdx < 12) {
+                        formattedFup = `${monthNames[monthIdx]} ${parts[parts.length - 1]}`;
+                    } else {
+                        formattedFup = fupString;
+                    }
+                }
+            } else {
+                formattedFup = fupString;
+            }
+
             let docKey = Object.keys(rowObj).find(k => {
                 let lower = k.toLowerCase().replace(/[^a-z]/g, '');
                 return lower === 'doc' || lower === 'dateofcommencement' || lower === 'commencement' || lower === 'commencementdate';
@@ -173,16 +192,21 @@ function processData(rows) {
                     totalPrem: 0,
                     totalCom: 0,
                     dob: dobString,
-                    dueMonths: []
+                    dueMonths: [],
+                    fupFormatted: formattedFup // Save formatted FUP for the PDF
                 };
                 excelData.push(existingEntry);
             } else if (!existingEntry.dob && dobString) {
                 existingEntry.dob = dobString;
             }
             
+            if (!existingEntry.fupFormatted && formattedFup) {
+                existingEntry.fupFormatted = formattedFup;
+            }
+            
             // Extract Due Month (format usually MM/YYYY or similar)
-            if (dueString) {
-                const parts = dueString.split(/[-/]/);
+            if (fupString) {
+                const parts = fupString.split(/[-/]/);
                 if (parts.length >= 1) {
                     let month = parts[0];
                     if (month.length === 1) month = '0' + month; // pad with zero
@@ -499,6 +523,12 @@ function generatePDFNotice(encodedRowData) {
     
     document.getElementById('pdf-client-name').textContent = row.name;
     document.getElementById('pdf-total-amount').textContent = formatCurrency(row.totalPrem);
+    
+    let noticeText = "This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due. Ensuring timely payment helps keep your policy active and your family protected.";
+    if (row.fupFormatted) {
+        noticeText = `This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due From ${row.fupFormatted}. Ensuring timely payment helps keep your policy active and your family protected.`;
+    }
+    document.getElementById('pdf-notice-text').textContent = noticeText;
     
     const tbody = document.getElementById('pdf-policy-list');
     tbody.innerHTML = '';
