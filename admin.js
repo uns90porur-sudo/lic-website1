@@ -514,6 +514,10 @@ function generatePDFNotice(encodedRowData) {
     
     html2pdf().set(opt).from(notice).save().then(() => {
         notice.classList.add('hidden');
+    }).catch(err => {
+        console.error("PDF Generation Error:", err);
+        alert("Failed to generate PDF. If you are opening this file directly from your computer (file://), browsers block PDF generation for security reasons. Please use the live website.");
+        notice.classList.add('hidden');
     });
 }
 
