@@ -50,7 +50,8 @@
                 <span>Admin Portal</span>
         </div>
         <ul class="nav">
-            <li class="active"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Pending Dues</a></li>
+            <li class="active" id="nav-dashboard"><a href="#" onclick="switchTab('dashboard'); return false;"><i class="fa-solid fa-file-invoice-dollar"></i> Pending Dues</a></li>
+            <li id="nav-analytics"><a href="#" onclick="switchTab('analytics'); return false;"><i class="fa-solid fa-chart-pie"></i> Commission Analytics</a></li>
             <li><a href="#" onclick="clearData(); return false;" style="color: #ffcccc;"><i class="fa-solid fa-upload"></i> Update Excel List</a></li>
             <li><a href="index.html"><i class="fa-solid fa-house"></i> View Live Site</a></li>
             <li><a href="#" id="dark-mode-toggle"><i class="fa-solid fa-moon"></i> Dark Mode</a></li>
@@ -79,6 +80,7 @@
 
         <!-- Dashboard Content (Hidden initially) -->
         <div id="dashboard-content" class="hidden">
+            <div id="tab-dashboard">
             <!-- Summary Cards -->
             <div class="summary-cards">
                 <div class="card summary-card">
@@ -103,7 +105,9 @@
                     </div>
                 </div>
             </div>
-
+            </div>
+            
+            <div id="tab-analytics" class="hidden">
             <!-- Analytics Chart Section -->
             <div class="card" id="analytics-section" style="margin-bottom: 30px;">
                 <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-chart-pie text-brand"></i> Commission Analytics</h3>
@@ -111,7 +115,7 @@
                     <canvas id="commissionChart"></canvas>
                 </div>
             </div>
-
+            </div>
             <!-- Upcoming Birthdays Section (Hidden initially) -->
             <div class="card table-container hidden" id="birthdays-section" style="margin-bottom: 30px; border-top: 4px solid #FFD700;">
                 <div class="table-header">
@@ -196,10 +200,12 @@
                     </table>
                 </div>
             </div>
+            </div> <!-- End tab-dashboard -->
         </div>
-    </div>
 
-    <!-- Hidden PDF Notice Template -->
+    </div>
+    
+    <!-- PDF Notice Template (Hidden) -->
     <div id="pdf-notice" class="hidden" style="padding: 40px; font-family: 'Inter', sans-serif; background: white; color: black;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 40px; border-bottom: 2px solid var(--brand-blue); padding-bottom: 20px;">
             <img src="lic-logo1.png" alt="LIC Logo" style="width: 120px; height: auto;">

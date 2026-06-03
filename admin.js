@@ -609,6 +609,16 @@ function handleLogin() {
     }
 }
 
+function switchTab(tabId) {
+    document.getElementById('tab-dashboard').classList.add('hidden');
+    document.getElementById('tab-analytics').classList.add('hidden');
+    document.getElementById('nav-dashboard').classList.remove('active');
+    document.getElementById('nav-analytics').classList.remove('active');
+    
+    document.getElementById('tab-' + tabId).classList.remove('hidden');
+    document.getElementById('nav-' + tabId).classList.add('active');
+}
+
 function processEncryptedData(decryptedData) {
     const parsed = JSON.parse(decryptedData);
     excelData = parsed.excelData;
