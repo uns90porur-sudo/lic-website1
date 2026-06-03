@@ -526,9 +526,9 @@ function generatePDFNotice(encodedRowData) {
     
     let noticeText = "This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due. Ensuring timely payment helps keep your policy active and your family protected.";
     if (row.fupFormatted) {
-        noticeText = `This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due From ${row.fupFormatted}. Ensuring timely payment helps keep your policy active and your family protected.`;
+        noticeText = `This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due from <strong>${row.fupFormatted}</strong>. Ensuring timely payment helps keep your policy active and your family protected.`;
     }
-    document.getElementById('pdf-notice-text').textContent = noticeText;
+    document.getElementById('pdf-notice-text').innerHTML = noticeText;
     
     const tbody = document.getElementById('pdf-policy-list');
     tbody.innerHTML = '';
