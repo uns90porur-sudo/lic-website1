@@ -615,8 +615,8 @@ function processEncryptedData(decryptedData) {
     
     // Check if the cached data is outdated (missing the new InstPrem/Dues fields)
     if (excelData && excelData.length > 0 && excelData[0].policies && excelData[0].policies.length > 0) {
-        if (excelData[0].policies[0].instPrem === undefined) {
-            alert("System Update: We have added the new InstPrem and Dues columns! Please upload your DETAILS.xlsx file again so the system can extract these new values.");
+        if (excelData[0].policies[0].instPrem === undefined || excelData[0].fupFormatted === undefined) {
+            alert("System Update: We added dynamic FUP months! Please upload your DETAILS.xlsx file again so the system can extract these new values.");
             localStorage.removeItem('licDashboardData');
             return; // Stay on upload screen
         }
