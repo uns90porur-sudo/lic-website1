@@ -218,7 +218,7 @@ function processData(rows) {
             
             existingEntry.count++;
             existingEntry.policyNumbers.push(rowObj['PolicyNo']);
-            existingEntry.policies.push({ no: rowObj['PolicyNo'], prem: prem, instPrem: instPrem, duesCount: duesCount, doc: docString });
+            existingEntry.policies.push({ no: rowObj['PolicyNo'], prem: prem, instPrem: instPrem, duesCount: duesCount, doc: docString, fup: formattedFup });
             existingEntry.totalPrem += prem;
             existingEntry.totalCom += comm;
         }
@@ -525,9 +525,6 @@ function generatePDFNotice(encodedRowData) {
     document.getElementById('pdf-total-amount').textContent = formatCurrency(row.totalPrem);
     
     let noticeText = "This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due. Ensuring timely payment helps keep your policy active and your family protected.";
-    if (row.fupFormatted) {
-        noticeText = `This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due from <strong>${row.fupFormatted}</strong>. Ensuring timely payment helps keep your policy active and your family protected.`;
-    }
     document.getElementById('pdf-notice-text').innerHTML = noticeText;
     
     const tbody = document.getElementById('pdf-policy-list');
@@ -538,9 +535,11 @@ function generatePDFNotice(encodedRowData) {
             const docText = policy.doc ? `<br><small style="color: #666; font-size: 0.85em;">D.O.C: ${formatExcelDate(policy.doc)}</small>` : '';
             const instPremText = policy.instPrem ? formatCurrency(policy.instPrem) : '-';
             const duesText = policy.duesCount || '-';
+            const fupText = policy.fup || '-';
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px; border: 1px solid #ccc;">${policy.no}${docText}</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center; font-weight: bold;">${fupText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${instPremText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${duesText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">${formatCurrency(policy.prem)}</td>
@@ -552,6 +551,7 @@ function generatePDFNotice(encodedRowData) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px; border: 1px solid #ccc;">${pNo}</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">-</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">-</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">-</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">-</td>
