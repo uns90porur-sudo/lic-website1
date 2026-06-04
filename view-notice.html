@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIC Premium Due Notice</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-blue: #003366;
+            --brand-yellow: #fcd426;
+            --bg-color: #f4f7f6;
+            --text-main: #2c3e50;
+            --text-muted: #64748b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-bar {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background-color: var(--brand-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .notice-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--brand-blue);
+            padding-bottom: 20px;
+        }
+
+        .header img {
+            width: 120px;
+            height: auto;
+        }
+        
+        .header-text {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .header-text h1 {
+            color: var(--brand-blue);
+            font-family: 'Outfit', sans-serif;
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        
+        .header-text h3 {
+            color: #555;
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+        
+        .header-text p {
+            margin: 0;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .profile-pic {
+            width: 110px;
+            height: 110px;
+            border-radius: 55px;
+            border: 2px solid var(--brand-blue);
+            background-image: url('profile.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .content {
+            margin-bottom: 30px;
+        }
+        
+        .content h2 {
+            margin: 0 0 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+        
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+        
+        .text-left { text-align: left; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        .footer {
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            margin: 0 0 10px 0;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #fca5a5;
+            text-align: center;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        @media (max-width: 600px) {
+            .notice-container {
+                padding: 20px;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-pic {
+                margin: 10px auto;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="error-container" class="error-msg" style="display: none;">
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> Invalid Link</h3>
+        <p>This premium due link appears to be invalid or broken. Please contact your LIC Advisor.</p>
+    </div>
+
+    <div id="notice-wrapper" style="display: none; width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="action-bar">
+            <button class="btn" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+        </div>
+        
+        <div class="notice-container" id="notice-document">
+            <div class="header">
+                <img src="lic-logo1.png" alt="LIC Logo">
+                <div class="header-text">
+                    <h1>LIC PREMIUM DUE NOTICE</h1>
+                    <h3>From the Desk of <span id="agent-name">R. Neelakandan</span></h3>
+                    <p><strong>LIC Agent Code:</strong> <span id="agent-code">0213471W</span> &nbsp;|&nbsp; <strong>Phone:</strong> <span id="agent-phone">+91 9444040525</span></p>
+                </div>
+                <div class="profile-pic"></div>
+            </div>
+            
+            <div class="content">
+                <h2 id="client-name">Loading...</h2>
+                <p>Dear Valued Client,</p>
+                <p>This is a gentle reminder that the premium for your Life Insurance Corporation (LIC) policies is due. Ensuring timely payment helps keep your policy active and your family protected.</p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-left">Policy Number</th>
+                        <th class="text-center">FUP</th>
+                        <th class="text-center">InstPrem</th>
+                        <th class="text-center">Dues</th>
+                        <th class="text-right">Total Premium</th>
+                    </tr>
+                </thead>
+                <tbody id="policy-list">
+                    <!-- Policies go here -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-right" style="font-weight: bold;">Total Amount Due:</td>
+                        <td id="total-amount" class="text-right" style="font-weight: bold; color: var(--brand-blue);"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="footer">
+                <p><strong>Payment Instructions:</strong></p>
+                <p>You can pay via the LIC Customer Portal, PayTM, Google Pay, or directly to your agent. Please contact me if you need assistance with the payment process.</p>
+                <br><br>
+                <p>Thank you for choosing LIC of India.</p>
+                <br><br>
+                <p><strong>Authorized Signatory</strong></p>
+                <p id="agent-sign">R. Neelakandan</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof AGENT_CONFIG !== 'undefined') {
+                document.getElementById('agent-name').textContent = AGENT_CONFIG.name;
+                document.getElementById('agent-code').textContent = AGENT_CONFIG.agentCode;
+                document.getElementById('agent-phone').textContent = AGENT_CONFIG.phoneFormatted;
+                document.getElementById('agent-sign').textContent = AGENT_CONFIG.name;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            
+            if (!dataParam) {
+                showError();
+                return;
+            }
+            
+            try {
+                // Decode base64 and parse JSON
+                const decodedStr = decodeURIComponent(escape(atob(dataParam)));
+                const rowData = JSON.parse(decodedStr);
+                
+                renderNotice(rowData);
+                document.getElementById('notice-wrapper').style.display = 'flex';
+                
+            } catch (err) {
+                console.error("Error parsing link data:", err);
+                showError();
+            }
+        });
+
+        function showError() {
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('notice-wrapper').style.display = 'none';
+        }
+
+        function renderNotice(row) {
+            document.getElementById('client-name').textContent = row.name;
+            
+            const tbody = document.getElementById('policy-list');
+            tbody.innerHTML = '';
+            
+            row.policies.forEach(policy => {
+                const tr = document.createElement('tr');
+                let policyNumText = policy.doc ? `${policy.no}<br><span style="font-size:0.8em; color:var(--text-muted);">(D.O.C: ${formatDate(policy.doc)})</span>` : policy.no;
+                
+                tr.innerHTML = `
+                    <td class="text-left">${policyNumText}</td>
+                    <td class="text-center" style="font-weight:bold;">${policy.fup || ''}</td>
+                    <td class="text-center">₹${formatCurrency(policy.instPrem)}</td>
+                    <td class="text-center">${policy.count}</td>
+                    <td class="text-right">₹${formatCurrency(policy.total)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('total-amount').textContent = `₹${formatCurrency(row.totalPrem)}`;
+        }
+
+        function formatCurrency(amount) {
+            if (!amount) return '0';
+            return Number(amount).toLocaleString('en-IN');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                // Assuming JS date format or YYYY-MM-DD
+                const date = new Date(dateStr);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            } catch(e) {
+                return dateStr;
+            }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('notice-document');
+            // Hide the border and shadow temporarily for a cleaner PDF
+            const originalShadow = element.style.boxShadow;
+            element.style.boxShadow = 'none';
+            element.style.padding = '40px';
+            
+            const opt = {
+                margin:       10,
+                filename:     `LIC_Notice_${document.getElementById('client-name').textContent.replace(/\\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.boxShadow = originalShadow;
+            });
+        }
+    </script>
+</body>
+</html>
