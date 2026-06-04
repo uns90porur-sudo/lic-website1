@@ -157,23 +157,7 @@ function processData(rows) {
             
             const fupRaw = findCol(['fup', 'f.u.p', 'due', 'duedate']);
             const fupString = (fupRaw || '').toString().trim();
-            
-            // Format FUP (e.g., 12/2025 to DEC 2025)
-            let formattedFup = '';
-            if (fupString && fupString.includes('/')) {
-                const parts = fupString.split('/');
-                if (parts.length >= 2) {
-                    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                    const monthIdx = parseInt(parts[0], 10) - 1;
-                    if (monthIdx >= 0 && monthIdx < 12) {
-                        formattedFup = `${monthNames[monthIdx]} ${parts[parts.length - 1]}`;
-                    } else {
-                        formattedFup = fupString;
-                    }
-                }
-            } else {
-                formattedFup = fupString;
-            }
+            const formattedFup = fupString; // Keeping the variable name for compatibility, but using raw string
 
             let docKey = Object.keys(rowObj).find(k => {
                 let lower = k.toLowerCase().replace(/[^a-z]/g, '');
@@ -539,7 +523,7 @@ function generatePDFNotice(encodedRowData) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 12px; border: 1px solid #ccc;">${policy.no}${docText}</td>
-                <td style="padding: 12px; border: 1px solid #ccc; text-align: center; font-weight: bold;">${fupText}</td>
+                <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${fupText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${instPremText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: center;">${duesText}</td>
                 <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">${formatCurrency(policy.prem)}</td>
