@@ -54,7 +54,7 @@
             <li id="nav-analytics"><a href="#" onclick="switchTab('analytics'); return false;"><i class="fa-solid fa-chart-pie"></i> Commission Analytics</a></li>
             <li><a href="#" onclick="clearData(); return false;" style="color: #ffcccc;"><i class="fa-solid fa-upload"></i> Update Excel List</a></li>
             <li><a href="index.html"><i class="fa-solid fa-house"></i> View Live Site</a></li>
-            <li><a href="#" id="dark-mode-toggle"><i class="fa-solid fa-moon"></i> Dark Mode</a></li>
+            <li id="nav-contacts"><a href="#" onclick="switchTab('contacts'); return false;"><i class="fa-solid fa-address-book"></i> Members Directory</a></li>
             <li style="margin-top: auto; padding-top: 20px;"><a href="#" onclick="logout(); return false;" style="color: #ff4d4d;"><i class="fa-solid fa-lock"></i> Logout & Lock</a></li>
         </ul>
     </div>
@@ -104,17 +104,6 @@
                         <h2 id="total-commission">₹0</h2>
                     </div>
                 </div>
-            </div>
-            </div>
-            
-            <div id="tab-analytics" class="hidden">
-            <!-- Analytics Chart Section -->
-            <div class="card" id="analytics-section" style="margin-bottom: 30px;">
-                <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-chart-pie text-brand"></i> Commission Analytics</h3>
-                <div style="position: relative; height: 300px; width: 100%;">
-                    <canvas id="commissionChart"></canvas>
-                </div>
-            </div>
             </div>
             <!-- Upcoming Birthdays Section (Hidden initially) -->
             <div class="card table-container hidden" id="birthdays-section" style="margin-bottom: 30px; border-top: 4px solid #FFD700;">
@@ -191,7 +180,6 @@
                                 <th>Policy Numbers</th>
                                 <th>Total Prem</th>
                                 <th>Est. Com</th>
-                                <th>Mobile Number</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -202,6 +190,40 @@
                 </div>
             </div>
             </div> <!-- End tab-dashboard -->
+            
+            <div id="tab-analytics" class="hidden">
+                <!-- Analytics Chart Section -->
+                <div class="card" id="analytics-section" style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-chart-pie text-brand"></i> Commission Analytics</h3>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="commissionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-contacts" class="hidden">
+                <div class="card" style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-address-book text-brand"></i> Members Directory</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="new-member-name" placeholder="Member Name" style="padding: 10px; flex: 1; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <input type="text" id="new-member-phone" placeholder="Mobile Number (10 digits)" style="padding: 10px; flex: 1; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <button onclick="addMemberManual()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Member</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="contacts-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Mobile Number</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
