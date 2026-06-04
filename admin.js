@@ -24,18 +24,7 @@ document.querySelectorAll('.quick-filter-btn').forEach(btn => {
     });
 });
 
-document.getElementById('dark-mode-toggle').addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark);
-    document.getElementById('dark-mode-toggle').innerHTML = isDark ? '<i class="fa-solid fa-sun"></i> Light Mode' : '<i class="fa-solid fa-moon"></i> Dark Mode';
-});
-
 window.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fa-solid fa-sun"></i> Light Mode';
-    }
 
     if (typeof AGENT_CONFIG !== 'undefined') {
         document.getElementById('cfg-agent-display').innerHTML = `<i class="fa-solid fa-user-tie"></i> ${AGENT_CONFIG.name} (${AGENT_CONFIG.agentCode})`;
@@ -355,9 +344,6 @@ function renderTable(data) {
             <td><strong>${policyNumbers}</strong></td>
             <td class="amount text-red">${totPrem}</td>
             <td class="amount text-green">${estCom}</td>
-            <td>
-                <input type="text" placeholder="Enter Mobile" value="${savedNumber}" onkeyup="saveMobileNumber('${name.replace(/'/g, "\\'")}', this.value, ${index})" style="padding: 5px; width: 110px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; outline: none;">
-            </td>
             <td style="display: flex; gap: 5px;">
                 <a id="wa-btn-${index}" data-msg="${encodedMsg}" href="${whatsappLink}" target="_blank" class="btn" style="background-color: #25D366; color: white; padding: 8px 12px; font-size: 0.85rem;"><i class="fa-brands fa-whatsapp"></i></a>
                 <button onclick="generatePDFNotice('${encodedRow}')" class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;"><i class="fa-solid fa-file-pdf"></i></button>
@@ -606,29 +592,77 @@ function handleLogin() {
 function switchTab(tabId) {
     document.getElementById('tab-dashboard').classList.add('hidden');
     document.getElementById('tab-analytics').classList.add('hidden');
+    document.getElementById('tab-contacts').classList.add('hidden');
+    
     document.getElementById('nav-dashboard').classList.remove('active');
     document.getElementById('nav-analytics').classList.remove('active');
+    document.getElementById('nav-contacts').classList.remove('active');
     
     document.getElementById('tab-' + tabId).classList.remove('hidden');
     document.getElementById('nav-' + tabId).classList.add('active');
+    
+    if (tabId === 'contacts') {
+        renderContactsList();
+    }
 }
 
-window.saveMobileNumber = function(clientName, number, index) {
+window.renderContactsList = function() {
     let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
-    number = number.replace(/\D/g, ''); // Remove non-digits
+    const tbody = document.getElementById('contacts-table-body');
+    tbody.innerHTML = '';
     
-    if (number.startsWith('91') && number.length == 12) number = number.substring(2);
-    if (number.startsWith('0') && number.length == 11) number = number.substring(1);
+    const names = Object.keys(licClientPhones).sort();
     
-    licClientPhones[clientName] = number;
+    if (names.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No members added yet.</td></tr>';
+        return;
+    }
+    
+    names.forEach(name => {
+        const phone = licClientPhones[name];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${name}</strong></td>
+            <td>${phone}</td>
+            <td>
+                <button onclick="deleteMember('${name.replace(/'/g, "\\'")}')" class="btn" style="background: #ff4d4d; color: white; padding: 5px 10px; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i> Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+};
+
+window.addMemberManual = function() {
+    const nameInput = document.getElementById('new-member-name');
+    const phoneInput = document.getElementById('new-member-phone');
+    
+    const name = nameInput.value.trim().toUpperCase();
+    let phone = phoneInput.value.replace(/\D/g, '');
+    
+    if (!name) return alert("Please enter a member name");
+    if (!phone) return alert("Please enter a mobile number");
+    
+    if (phone.startsWith('91') && phone.length == 12) phone = phone.substring(2);
+    if (phone.startsWith('0') && phone.length == 11) phone = phone.substring(1);
+    
+    let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
+    licClientPhones[name] = phone;
     localStorage.setItem('licClientPhones', JSON.stringify(licClientPhones));
     
-    const linkBtn = document.getElementById(`wa-btn-${index}`);
-    if (linkBtn) {
-        let baseMsg = linkBtn.getAttribute('data-msg');
-        let waNumber = number ? '91' + number : '';
-        if (number.startsWith('91') && number.length > 10) waNumber = number;
-        linkBtn.href = `https://wa.me/${waNumber}?text=${baseMsg}`;
+    nameInput.value = '';
+    phoneInput.value = '';
+    
+    renderContactsList();
+    if (typeof applyFilters === 'function') applyFilters(); // Refresh main table
+};
+
+window.deleteMember = function(name) {
+    if (confirm(`Are you sure you want to delete ${name}?`)) {
+        let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
+        delete licClientPhones[name];
+        localStorage.setItem('licClientPhones', JSON.stringify(licClientPhones));
+        renderContactsList();
+        if (typeof applyFilters === 'function') applyFilters();
     }
 };
 
