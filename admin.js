@@ -325,7 +325,7 @@ function renderTable(data) {
         const estCom = formatCurrency(row.totalCom);
         
         let agentName = (typeof AGENT_CONFIG !== 'undefined') ? AGENT_CONFIG.name : 'R. Neelakandan';
-        const message = `Hello ${name} Sir/Madam,\n\nThis is a gentle reminder from your LIC Advisor, ${agentName}.\n\nYou have ${count} pending LIC policies with a total premium due of ${totPrem}. (Policy Nos: ${row.policyNumbers.join(', ')}).\n\nPlease pay the premium at the earliest to keep your life cover active. You can securely pay online at https://licindia.in/\n\nIf you have any questions, feel free to contact me.\n\nThank you!`;
+        const message = `Hello ${name} Sir/Madam,\nThis is a gentle reminder from your LIC Advisor, ${agentName}.\nYou have ${count} pending LIC policies with a total premium due of ${totPrem}. (Policy Nos: ${row.policyNumbers.join(', ')}).\nPlease pay the premium at the earliest to keep your life cover active. You can securely pay online at https://licindia.in/\nIf you have any questions, feel free to contact me.\nThank you!`;
         
         let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
         const savedNumber = licClientPhones[name] || '';
