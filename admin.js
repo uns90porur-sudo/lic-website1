@@ -337,7 +337,14 @@ function renderTable(data) {
         
         let agentName = (typeof AGENT_CONFIG !== 'undefined') ? AGENT_CONFIG.name : 'R. Neelakandan';
         const message = `Hello ${name} Sir/Madam,\n\nThis is a gentle reminder from your LIC Advisor, ${agentName}.\n\nYou have ${count} pending LIC policies with a total premium due of ${totPrem}. (Policy Nos: ${row.policyNumbers.join(', ')}).\n\nPlease pay the premium at the earliest to keep your life cover active. You can securely pay online at https://licindia.in/\n\nIf you have any questions, feel free to contact me.\n\nThank you!`;
-        const whatsappLink = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        
+        let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
+        const savedNumber = licClientPhones[name] || '';
+        
+        const encodedMsg = encodeURIComponent(message);
+        let waNumber = savedNumber ? '91' + savedNumber : '';
+        if (savedNumber.startsWith('91') && savedNumber.length > 10) waNumber = savedNumber;
+        const whatsappLink = `https://wa.me/${waNumber}?text=${encodedMsg}`;
         
         const encodedRow = encodeURIComponent(JSON.stringify(row));
         
@@ -348,9 +355,12 @@ function renderTable(data) {
             <td><strong>${policyNumbers}</strong></td>
             <td class="amount text-red">${totPrem}</td>
             <td class="amount text-green">${estCom}</td>
+            <td>
+                <input type="text" placeholder="Enter Mobile" value="${savedNumber}" onkeyup="saveMobileNumber('${name.replace(/'/g, "\\'")}', this.value, ${index})" style="padding: 5px; width: 110px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.85rem; outline: none;">
+            </td>
             <td style="display: flex; gap: 5px;">
-                <a href="${whatsappLink}" target="_blank" class="btn" style="background-color: #25D366; color: white; padding: 8px 12px; font-size: 0.85rem;"><i class="fa-brands fa-whatsapp"></i></a>
-                <button onclick="generatePDFNotice('${encodeURIComponent(JSON.stringify(row))}')" class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;"><i class="fa-solid fa-file-pdf"></i></button>
+                <a id="wa-btn-${index}" data-msg="${encodedMsg}" href="${whatsappLink}" target="_blank" class="btn" style="background-color: #25D366; color: white; padding: 8px 12px; font-size: 0.85rem;"><i class="fa-brands fa-whatsapp"></i></a>
+                <button onclick="generatePDFNotice('${encodedRow}')" class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;"><i class="fa-solid fa-file-pdf"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -602,6 +612,25 @@ function switchTab(tabId) {
     document.getElementById('tab-' + tabId).classList.remove('hidden');
     document.getElementById('nav-' + tabId).classList.add('active');
 }
+
+window.saveMobileNumber = function(clientName, number, index) {
+    let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
+    number = number.replace(/\D/g, ''); // Remove non-digits
+    
+    if (number.startsWith('91') && number.length == 12) number = number.substring(2);
+    if (number.startsWith('0') && number.length == 11) number = number.substring(1);
+    
+    licClientPhones[clientName] = number;
+    localStorage.setItem('licClientPhones', JSON.stringify(licClientPhones));
+    
+    const linkBtn = document.getElementById(`wa-btn-${index}`);
+    if (linkBtn) {
+        let baseMsg = linkBtn.getAttribute('data-msg');
+        let waNumber = number ? '91' + number : '';
+        if (number.startsWith('91') && number.length > 10) waNumber = number;
+        linkBtn.href = `https://wa.me/${waNumber}?text=${baseMsg}`;
+    }
+};
 
 function processEncryptedData(decryptedData) {
     const parsed = JSON.parse(decryptedData);
