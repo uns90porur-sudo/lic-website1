@@ -328,9 +328,9 @@ function renderTable(data) {
         // Generate Web Notice Link
         const payloadStr = JSON.stringify(row);
         const base64Payload = btoa(unescape(encodeURIComponent(payloadStr)));
-        const noticeLink = `https://lic-website1.vercel.app/view-notice.html?data=${base64Payload}`;
+        const noticeLink = `https://lic-website1.vercel.app/view-notice.html?data=${encodeURIComponent(base64Payload)}`;
         
-        const message = `Hello ${name} Sir/Madam,\nThis is a gentle reminder from your LIC Advisor, ${agentName}.\nYou have ${count} pending LIC policies with a total premium due of ${totPrem}. (Policy Nos: ${row.policyNumbers.join(', ')}).\nPlease pay the premium at the earliest to keep your life cover active. You can securely pay online at https://licindia.in/\n\nView and download your detailed Premium Notice here:\n${noticeLink}\n\nIf you have any questions, feel free to contact me.\nThank you!`;
+        const message = `Hello ${name} Sir/Madam,\nThis is a gentle reminder from your LIC Advisor, ${agentName}.\nYou have ${count} pending LIC policies with a total premium due of ${totPrem}. (Policy Nos: ${row.policyNumbers.join(', ')}).\n\nView and download your detailed Premium Notice here:\n${noticeLink}\n\nIf you have any questions, feel free to contact me.\nThank you!`;
         
         let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
         const savedNumber = licClientPhones[name] || '';
