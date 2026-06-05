@@ -290,14 +290,14 @@
             
             row.policies.forEach(policy => {
                 const tr = document.createElement('tr');
-                let policyNumText = policy.doc ? `${policy.no}<br><span style="font-size:0.8em; color:var(--text-muted);">(D.O.C: ${formatDate(policy.doc)})</span>` : policy.no;
+                let policyNumText = policy.doc ? `${policy.no}<br><span style="font-size:0.8em; color:var(--text-muted);">(D.O.C: ${formatExcelDate(policy.doc)})</span>` : policy.no;
                 
                 tr.innerHTML = `
                     <td class="text-left">${policyNumText}</td>
-                    <td class="text-center" style="font-weight:bold;">${policy.fup || ''}</td>
-                    <td class="text-center">₹${formatCurrency(policy.instPrem)}</td>
-                    <td class="text-center">${policy.count}</td>
-                    <td class="text-right">₹${formatCurrency(policy.total)}</td>
+                    <td class="text-center" style="font-weight:bold;">${policy.fup || '-'}</td>
+                    <td class="text-center">${policy.instPrem ? '₹' + formatCurrency(policy.instPrem) : '-'}</td>
+                    <td class="text-center">${policy.duesCount || '-'}</td>
+                    <td class="text-right">₹${formatCurrency(policy.prem)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -310,17 +310,17 @@
             return Number(amount).toLocaleString('en-IN');
         }
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
+        function formatExcelDate(excelDate) {
+            if (!excelDate) return '';
+            if (typeof excelDate === 'string') return excelDate;
             try {
-                // Assuming JS date format or YYYY-MM-DD
-                const date = new Date(dateStr);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${day}/${month}/${year}`;
+                const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+                const d = String(date.getDate()).padStart(2, '0');
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const y = date.getFullYear();
+                return `${d}/${m}/${y}`;
             } catch(e) {
-                return dateStr;
+                return String(excelDate);
             }
         }
 
