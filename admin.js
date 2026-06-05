@@ -364,7 +364,7 @@ function applyFilters() {
     const sortBy = document.getElementById('sort-by').value;
     
     // 1. Filter
-    let filteredData = excelData.filter(row => {
+    window.currentFilteredData = excelData.filter(row => {
         const nameMatch = row.name.toLowerCase().includes(searchTerm);
         const policyMatch = row.policyNumbers.join(' ').toLowerCase().includes(searchTerm);
         const searchMatch = !searchTerm || nameMatch || policyMatch;
@@ -391,15 +391,15 @@ function applyFilters() {
     
     // 2. Sort
     if (sortBy === 'prem-desc') {
-        filteredData.sort((a, b) => b.totalPrem - a.totalPrem);
+        window.currentFilteredData.sort((a, b) => b.totalPrem - a.totalPrem);
     } else if (sortBy === 'prem-asc') {
-        filteredData.sort((a, b) => a.totalPrem - b.totalPrem);
+        window.currentFilteredData.sort((a, b) => a.totalPrem - b.totalPrem);
     } else if (sortBy === 'name-asc') {
-        filteredData.sort((a, b) => a.name.localeCompare(b.name));
+        window.currentFilteredData.sort((a, b) => a.name.localeCompare(b.name));
     }
     
     // 3. Render
-    renderTable(filteredData);
+    renderTable(window.currentFilteredData);
 }
 
 function formatCurrency(amount) {
@@ -553,7 +553,7 @@ function generatePDFNotice(encodedRowData) {
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
-    html2pdf().set(opt).from(notice).save().then(() => {
+    return html2pdf().set(opt).from(notice).save().then(() => {
         notice.classList.add('hidden');
     }).catch(err => {
         console.error("PDF Generation Error:", err);
@@ -561,6 +561,37 @@ function generatePDFNotice(encodedRowData) {
         notice.classList.add('hidden');
     });
 }
+
+window.downloadAllPDFs = async function() {
+    if (!window.currentFilteredData || window.currentFilteredData.length === 0) {
+        alert("No records currently shown to download.");
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to download ${window.currentFilteredData.length} PDFs?\nThis process may take a minute and could temporarily freeze your browser.`)) {
+        return;
+    }
+    
+    const btn = document.getElementById('btn-download-all');
+    const originalText = btn.innerHTML;
+    
+    for (let i = 0; i < window.currentFilteredData.length; i++) {
+        const row = window.currentFilteredData[i];
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Downloading ${i + 1}/${window.currentFilteredData.length}...`;
+        const encodedRow = encodeURIComponent(JSON.stringify(row));
+        
+        try {
+            await generatePDFNotice(encodedRow);
+            // Allow browser to breathe and UI to update
+            await new Promise(r => setTimeout(r, 800)); 
+        } catch (e) {
+            console.error("Error downloading PDF for " + row.name, e);
+        }
+    }
+    
+    btn.innerHTML = originalText;
+    alert(`Finished downloading ${window.currentFilteredData.length} PDFs!`);
+};
 
 let currentCryptoKey = ''; // Holds password for session
 function handleLogin() {
