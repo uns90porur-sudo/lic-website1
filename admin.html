@@ -203,7 +203,16 @@
             
             <div id="tab-contacts" class="hidden">
                 <div class="card" style="margin-bottom: 30px;">
-                    <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-address-book text-brand"></i> Members Directory</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;"><i class="fa-solid fa-address-book text-brand"></i> Members Directory</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="downloadCSVTemplate()" class="btn" style="background: none; border: 2px solid var(--brand-blue); color: var(--brand-blue); padding: 8px 15px;"><i class="fa-solid fa-download"></i> CSV Template</button>
+                            <label class="btn btn-secondary" style="margin: 0; cursor: pointer; padding: 8px 15px;">
+                                <i class="fa-solid fa-upload"></i> Import CSV
+                                <input type="file" id="csv-import-file" accept=".csv" style="display: none;" onchange="importCSV(event)">
+                            </label>
+                        </div>
+                    </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                         <input type="text" id="new-member-name" placeholder="Member Name" style="padding: 10px; flex: 1; border-radius: 6px; border: 1px solid var(--border-color);">
                         <input type="text" id="new-member-phone" placeholder="Mobile Number (10 digits)" style="padding: 10px; flex: 1; border-radius: 6px; border: 1px solid var(--border-color);">

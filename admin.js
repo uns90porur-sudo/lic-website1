@@ -671,6 +671,60 @@ window.deleteMember = function(name) {
     }
 };
 
+window.downloadCSVTemplate = function() {
+    const csvContent = "Name,Mobile Number\nS. MURUGAN,9876543210\nR. NEELAKANDAN,9444040525\n";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "lic_members_template.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+window.importCSV = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/);
+        
+        let licClientPhones = JSON.parse(localStorage.getItem('licClientPhones') || '{}');
+        let count = 0;
+        
+        for (let i = 1; i < lines.length; i++) { // Skip header
+            const line = lines[i].trim();
+            if (!line) continue;
+            
+            const parts = line.split(',');
+            if (parts.length >= 2) {
+                const name = parts[0].trim().toUpperCase();
+                let phone = parts[1].replace(/\D/g, '');
+                
+                if (phone.startsWith('91') && phone.length == 12) phone = phone.substring(2);
+                if (phone.startsWith('0') && phone.length == 11) phone = phone.substring(1);
+                
+                if (name && phone) {
+                    licClientPhones[name] = phone;
+                    count++;
+                }
+            }
+        }
+        
+        localStorage.setItem('licClientPhones', JSON.stringify(licClientPhones));
+        renderContactsList();
+        if (typeof applyFilters === 'function') applyFilters(); // Refresh main table
+        
+        alert(`Successfully imported ${count} members!`);
+        event.target.value = ''; // Reset input
+    };
+    reader.readAsText(file);
+};
+
 function processEncryptedData(decryptedData) {
     const parsed = JSON.parse(decryptedData);
     excelData = parsed.excelData;
