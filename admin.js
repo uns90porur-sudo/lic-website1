@@ -774,7 +774,7 @@ function processEncryptedData(decryptedData) {
     document.getElementById('total-premium').textContent = formatCurrency(parsed.totalPremium);
     document.getElementById('total-commission').textContent = formatCurrency(parsed.totalCommission);
     
-    renderTable(excelData);
+    applyFilters(); // This replaces renderTable(excelData) and initializes window.currentFilteredData
     renderBirthdays(excelData);
     renderChart(parsed.totalPremium, parsed.totalCommission);
     
