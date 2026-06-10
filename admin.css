@@ -1,22 +1,35 @@
 :root {
-    --brand-blue: #003366;
-    --brand-blue-dark: #001f3f;
-    --brand-gold: #FFD700;
-    --bg-main: #f4f7fb;
-    --bg-card: #ffffff;
-    --text-main: #333333;
-    --text-muted: #666666;
-    --border-color: #eaedf2;
+    --brand-blue: #2563eb;
+    --brand-blue-dark: #1e3a8a;
+    --brand-blue-light: #3b82f6;
+    --brand-gold: #fbbf24;
+    --bg-main: #f8fafc;
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-glass: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border-color: rgba(255, 255, 255, 0.5);
     --font-main: 'Inter', sans-serif;
     --font-heading: 'Outfit', sans-serif;
+    --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
 }
 
 body.dark-mode {
+    --brand-blue: #3b82f6;
+    --brand-blue-dark: #1e3a8a;
     --bg-main: #0f172a;
-    --bg-card: #1e293b;
-    --text-main: #f1f5f9;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --bg-glass: rgba(15, 23, 42, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --border-color: #334155;
+    --border-color: rgba(255, 255, 255, 0.05);
+    --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
 }
 
 body.dark-mode table th {
@@ -51,9 +64,19 @@ body.dark-mode .modal-footer {
 
 body {
     font-family: var(--font-main);
-    background-color: var(--bg-main);
+    background: var(--bg-gradient);
     color: var(--text-main);
     overflow: hidden;
+    min-height: 100vh;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
 }
 
 .app-wrapper {
@@ -65,11 +88,13 @@ body {
 /* Sidebar */
 .sidebar {
     width: 260px;
-    background-color: var(--brand-blue-dark);
+    background: linear-gradient(180deg, var(--brand-blue-dark) 0%, #172554 100%);
     color: white;
     height: 100%;
     display: flex;
     flex-direction: column;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
 .logo {
@@ -139,11 +164,19 @@ header h2 {
 /* Cards */
 .card {
     background: var(--bg-card);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
     margin-bottom: 30px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
 }
 
 /* Upload Section */
@@ -202,6 +235,7 @@ input[type="file"] {
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
     margin-bottom: 30px;
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .summary-card {
@@ -209,6 +243,17 @@ input[type="file"] {
     align-items: center;
     gap: 20px;
     margin-bottom: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .card-icon {
@@ -289,19 +334,35 @@ th, td {
 }
 
 th {
-    background-color: var(--bg-main);
+    background: rgba(0, 0, 0, 0.03);
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.9rem;
     white-space: nowrap;
+    border-top: 1px solid var(--border-color);
+}
+
+body.dark-mode th {
+    background: rgba(255, 255, 255, 0.05) !important;
 }
 
 td {
     font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+}
+
+tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 tbody tr:hover {
-    background-color: #f8faff;
+    background-color: rgba(37, 99, 235, 0.05);
+    transform: scale(1.01);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+body.dark-mode tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.1);
 }
 
 .policy-name {
@@ -355,7 +416,7 @@ tbody tr:hover {
     align-items: center;
     height: 100vh;
     width: 100vw;
-    background: linear-gradient(135deg, var(--bg-main) 0%, #e0e8f5 100%);
+    background: var(--bg-gradient);
     position: fixed;
     top: 0;
     left: 0;
@@ -369,13 +430,19 @@ tbody tr:hover {
 }
 
 .login-box {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
     width: 100%;
     max-width: 400px;
-    padding: 40px;
+    padding: 50px 40px;
+    border-radius: 20px;
     text-align: center;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-hover);
     transform: translateY(0);
     transition: transform 0.3s ease;
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .login-box:hover {

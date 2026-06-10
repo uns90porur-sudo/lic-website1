@@ -5,15 +5,16 @@
 
 :root {
     /* Color Palette */
-    --brand-blue: #003366;
-    --brand-blue-light: #00509e;
-    --brand-blue-dark: #001f3f;
-    --brand-gold: #FFD700;
-    --brand-gold-hover: #ffea00;
-    --text-main: #333333;
-    --text-muted: #666666;
-    --bg-main: #ffffff;
-    --bg-light: #f4f7fb;
+    --brand-blue: #2563eb;
+    --brand-blue-light: #3b82f6;
+    --brand-blue-dark: #1e3a8a;
+    --brand-gold: #fbbf24;
+    --brand-gold-hover: #f59e0b;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --bg-main: #f8fafc;
+    --bg-light: #f1f5f9;
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     
     /* Typography */
     --font-heading: 'Outfit', sans-serif;
@@ -21,11 +22,11 @@
     
     /* Layout */
     --container-width: 1200px;
-    --border-radius: 12px;
+    --border-radius: 16px;
     --transition: all 0.3s ease;
     --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
-    --shadow-md: 0 10px 30px rgba(0, 51, 102, 0.1);
-    --shadow-lg: 0 20px 40px rgba(0,0,0,0.1);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -97,11 +98,12 @@ ul {
 }
 
 .glassmorphism {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: var(--shadow-md);
+    border-radius: var(--border-radius);
 }
 
 .hidden {
@@ -114,36 +116,37 @@ ul {
     padding: 14px 28px;
     font-family: var(--font-heading);
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     border: none;
     text-align: center;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1rem;
 }
 
 .btn-primary {
-    background-color: var(--brand-gold);
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-hover));
     color: var(--brand-blue-dark);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
 }
 
 .btn-primary:hover {
-    background-color: var(--brand-gold-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(251, 191, 36, 0.6);
 }
 
 .btn-primary-small {
-    background-color: var(--brand-gold);
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-hover));
     color: var(--brand-blue-dark) !important;
     padding: 8px 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn-primary-small:hover {
-    background-color: var(--brand-gold-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.5);
 }
 
 .btn-secondary {
@@ -178,11 +181,13 @@ ul {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.4s ease;
     padding: 15px 0;
 }
 
