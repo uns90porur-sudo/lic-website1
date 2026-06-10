@@ -1,13 +1,13 @@
 const { MongoClient } = require('mongodb');
 
-// Get the connection string from Vercel Environment Variables
-const uri = process.env.MONGODB_URI;
+// Get the connection string from Vercel Environment Variables or fallback to hardcoded string
+const uri = process.env.MONGODB_URI || "mongodb+srv://admin:LIC123@cluster0.ljzkkqf.mongodb.net/?appName=Cluster0";
 const options = {};
 
 let client;
 let clientPromise;
 
-if (!process.env.MONGODB_URI) {
+if (!uri) {
   console.error('Please add your Mongo URI to Vercel Environment Variables');
 } else {
   if (process.env.NODE_ENV === 'development') {
